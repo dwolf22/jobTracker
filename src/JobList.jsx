@@ -1,43 +1,143 @@
 import AddJob from './AddJob.jsx'
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 export default function JobList() {
 
-    const [jobs, setJobs] = useState([])
+    // ------------------------------
+    // State to store all job applications
+    // Initialized from localStorage to persist data across page reloads
+    // ------------------------------
+    const [jobs, setJobs] = useState(() => {
+        const savedJobs = localStorage.getItem("jobs");
+        return savedJobs ? JSON.parse(savedJobs) : [];
+    });
 
+    // ------------------------------
+    // State to track which job is currently being edited
+    // If null, the form is in "Add" mode
+    // ------------------------------
+    const [editJob, setEditJob] = useState(null)
+
+    // ------------------------------
+    // State to toggle visibility of the Add/Edit Job form
+    // ------------------------------
     const [isAdding, setAdding] = useState(false);
 
+    // ------------------------------
+    // Save jobs to localStorage whenever jobs array changes
+    // ------------------------------
+    useEffect(() => {
+        localStorage.setItem("jobs", JSON.stringify(jobs));
+    }, [jobs]);
+
+    // ------------------------------
+    // Toggle the Add Job form visibility
+    // If opening the form for adding, clear editJob
+    // ------------------------------
     const addButtonVisible = () => {
         setAdding(!isAdding)
+        setEditJob(null)
     }
 
+    // ------------------------------
+    // Handles submission of the Add/Edit form
+    // If editJob exists, update the job
+    // Otherwise, add a new job with a unique ID
+    // ------------------------------
     const sendJob = (job) => {
-        setJobs([...jobs, job])
-        console.log(jobs)
-        setAdding(!isAdding)
+
+        if (editJob) {
+            // Update existing job
+            setJobs(prevJobs =>
+                prevJobs.map(j =>
+                    j.id === job.id ? job : j // Replace matching job
+                )
+            );
+            setEditJob(null); // Clear edit state
+        } else {
+            // Add new job
+            const newJob = {
+                id: Date.now(), // Unique ID for the job
+                ...job
+            };
+
+            setJobs(prev => [...prev, newJob]);
+        }
+
+        setAdding(false); // Close the form after submission
     }
 
-    
+    // ------------------------------
+    // Remove a job from the list by index
+    // ------------------------------
+    const remove = (index) => {
+        setJobs(prevJobs => prevJobs.filter((_, i) => i !== index));
+    }
+
+    // ------------------------------
+    // Prepare a job for editing
+    // Sets the editJob state and opens the form
+    // ------------------------------
+    const edit = (job) => {
+        setEditJob(job)
+        setAdding(true)
+    }
+
+    const update = (upDatedJobs) => {
+        setJobs(prevJobs => {
+            prevJobs.map(job =>
+            job.id === upDatedJobs.id ? upDatedJobs : job
+            )
+        })
+        setEditJob(null);
+        setAdding(false);
+    }
+
+    // ------------------------------
+    // Render the Job Tracker UI
+    // ------------------------------
     return (
         <div>
-            <button className="addJob" onClick={addButtonVisible}>Add Job</button>
-            {isAdding && (<AddJob getJob={sendJob}/>)}
-            {jobs.map(
-                (job, i) => (
-                    <div className="jobBox" key={i}>
-                        <h3>{job.company}</h3>
-                        <ul>
-                            <li>Role: {job.role}</li>
-                            <li>Date: {job.date}</li>
-                            <li>Status: {job.status}</li>
-                            <li>Notes: {job.notes}</li>
-                        </ul>
-                        <button>Edit</button>
-                        <button>Delete</button>
-                    </div>
-                ))
-            }
-            
+
+            {/* Add Job button */}
+            <button className="addJob" onClick={addButtonVisible}>
+                Add Job
+            </button>
+
+            {/* Show Add/Edit Job form if isAdding is true */}
+            {isAdding && (
+                <AddJob
+                    getJob={sendJob}   // Pass function to handle submission
+                    editJob={edit}  // Pass job to edit (if editing)
+                />
+            )}
+
+            {/* Display the list of jobs */}
+            {jobs.map((job, i) => (
+                <div className="jobBox" key={job.id || i}>
+
+                    <h3>{job.company}</h3>
+
+                    <ul>
+                        <li>Role: {job.role}</li>
+                        <li>Date: {job.date}</li>
+                        <li>Status: {job.status}</li>
+                        <li>Notes: {job.notes}</li>
+                    </ul>
+
+                    {/* Edit button */}
+                    <button onClick={() => edit(job)}>
+                        Edit
+                    </button>
+
+                    {/* Delete button */}
+                    <button onClick={() => remove(i)}>
+                        Delete
+                    </button>
+
+                </div>
+            ))}
+
         </div>
     )
 }

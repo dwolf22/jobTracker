@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 
-export default function AddJob({getJob}) {
+export default function AddJob({getJob, editingJob}) {
 
     const [jobData, setJob] =useState({
         company: "",
@@ -9,6 +9,12 @@ export default function AddJob({getJob}) {
         date: "",
         status: "",
         notes: ""})
+
+    useEffect(() => {
+        if(editingJob) {
+            setJob(editingJob)
+        }
+    }, [editingJob])
 
     const handleSubmit = (e) => {
         e.preventDefault()
@@ -36,12 +42,12 @@ export default function AddJob({getJob}) {
                     <option value="">Please choose an option</option>
                     <option value="Applied">Applied</option>
                     <option value="Interview">Interview</option>
-                    <option value="Offer">Reject</option>
+                    <option value="Offer">Offer</option>
                     <option value="Rejected">Rejected</option>
                 </select>
-                <label htmlFor="notes" name="notes" className="notes">Notes</label>
+                <label htmlFor="notes" className="notes">Notes</label>
                 <input type="text" name="notes" value={jobData.notes} onChange={handleChange} />
-                <button type="submit">Add</button>
+                <button type="submit">{editingJob ? "Update": "Add"}</button>
             </form>
         </div>
     )
