@@ -1,5 +1,6 @@
 import AddJob from './AddJob.jsx'
 import { useState, useEffect } from "react"
+import SearchBar from './SearchBar.jsx';
 
 export default function JobList() {
 
@@ -22,6 +23,8 @@ export default function JobList() {
     // State to toggle visibility of the Add/Edit Job form
     // ------------------------------
     const [isAdding, setAdding] = useState(false);
+
+    const [search, setSearch] = useState("")
 
     // ------------------------------
     // Save jobs to localStorage whenever jobs array changes
@@ -93,12 +96,21 @@ export default function JobList() {
         setAdding(false);
     }
 
+    const searchedJobs = jobs.filter((job) => {
+        if(!search || search === 'All') return true;
+        return job.status === search;
+    })
+
+    const handleSearch = (value) => {
+        setSearch(value)
+    }
+
     // ------------------------------
     // Render the Job Tracker UI
     // ------------------------------
     return (
         <div>
-
+            <SearchBar onChange={handleSearch}/>
             {/* Add Job button */}
             <button className="addJob" onClick={addButtonVisible}>
                 Add Job
@@ -113,7 +125,7 @@ export default function JobList() {
             )}
 
             {/* Display the list of jobs */}
-            {jobs.map((job, i) => (
+            {searchedJobs.map((job, i) => (
                 <div className="jobBox" key={job.id || i}>
 
                     <h3>{job.company}</h3>
