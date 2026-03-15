@@ -26,7 +26,7 @@ export default function SearchBar({onChange}) {
                     <option value="Offer">Offer</option>
                     <option value="Rejected">Rejected</option>
                 </select>
-                <button type="submit" className="col-sm-2 rounded-4 bg-light border border-dark">Search</button>
+                <button type="submit" className="col-sm-2 rounded-4 bg-light border border-dark text-dark">Search</button>
             </form>
         </div>
     )

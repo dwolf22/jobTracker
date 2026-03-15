@@ -60,8 +60,8 @@ export default function JobList() {
         } else {
             // Add new job
             const newJob = {
-                id: Date.now(), // Unique ID for the job
-                ...job
+                ...job,
+                id:Date.now() // Unique ID for the job
             };
 
             setJobs(prev => [...prev, newJob]);
@@ -84,16 +84,6 @@ export default function JobList() {
     const edit = (job) => {
         setEditJob(job)
         setAdding(true)
-    }
-
-    const update = (upDatedJobs) => {
-        setJobs(prevJobs => {
-            prevJobs.map(job =>
-                job.id === upDatedJobs.id ? upDatedJobs : job
-            )
-        })
-        setEditJob(null);
-        setAdding(false);
     }
 
     const searchedJobs = jobs.filter((job) => {
@@ -122,7 +112,7 @@ export default function JobList() {
             {isAdding && (
                 <AddJob
                     getJob={sendJob}   // Pass function to handle submission
-                    editJob={edit}  // Pass job to edit (if editing)
+                    editJob={editJob}  // Pass job to edit (if editing)
                 />
             )}
 

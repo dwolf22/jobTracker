@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 
 
-export default function AddJob({ getJob, editingJob }) {
+export default function AddJob({ getJob, editJob }) {
 
     const [jobData, setJob] = useState({
         company: "",
@@ -12,14 +12,16 @@ export default function AddJob({ getJob, editingJob }) {
     })
 
     useEffect(() => {
-        if (editingJob) {
-            setJob(editingJob)
+        if (editJob) {
+            setJob(editJob)
         }
-    }, [editingJob])
+    }, [editJob])
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        getJob(jobData)
+        getJob({
+            ...jobData, id:editJob?.id || Date.now()
+        })
     }
 
     const handleChange = (e) => {
@@ -40,7 +42,7 @@ export default function AddJob({ getJob, editingJob }) {
                         <input type="text" name="role" className="form-control" value={jobData.role} onChange={handleChange} placeholder="Role" />
                     </div>
                     <div className="col-sm-3">
-                        <input type="date" name="date" className="form-control" value={jobData.date} onChange={handleChange} />
+                        <input type="date" name="date" className="form-control flex-shrink-0 w-100" value={jobData.date} onChange={handleChange} />
                     </div>
                     <div className="col-sm-3">
                         <select name="status" className="form-control" value={jobData.status} onChange={handleChange}>
@@ -56,7 +58,7 @@ export default function AddJob({ getJob, editingJob }) {
                     </div>
                 </div>
                 <div className="row justify-content-center my-3">
-                        <button type="submit" className="rounded-4 bg-light border border-dark col-4">{editingJob ? "Update" : "Add"}</button>
+                        <button type="submit" className="text-dark rounded-4 bg-light border border-dark col-4">{editJob ? "Update" : "Add"}</button>
                 </div>
             </form>
         </div>
