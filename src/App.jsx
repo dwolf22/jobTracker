@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <div className='container-fluid text-center'>
+      <div className='container-fluid text-center text-dark'>
 
         <h1 className='text-center mb-5'>Job Tracker Project</h1>
         <JobList/>
